@@ -24,13 +24,16 @@ SECRET_KEY = 'django-insecure-9#)529-b&atpphp$$w_v3huv12p+#08jl#82ozibuy^tvcsd!k
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+WHITENOISE_USE_FINDERS = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'whitenoise.runserver_nostatic',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +43,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -73,14 +78,21 @@ WSGI_APPLICATION = 'valorant.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
+import dj_database_url
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': '<database_name>',
+        'USER': '<user_name>',
+        'PASSWORD': '<password>',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
@@ -127,3 +139,4 @@ STATIC_ROOT= os.path.join(BASE_DIR,'assets')
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
